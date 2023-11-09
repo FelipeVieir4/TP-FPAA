@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -31,6 +33,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        GeradorDeProblemas gerador = new GeradorDeProblemas();
+        List<int[]> lista = gerador.geracaoDeRotas(13, 10, 0.40); // Note que a dispersão é uma porcentagem em decimal
+        for (int[] is : lista) {
+            System.out.println(Arrays.toString(is));
+        }
         switch (menu()) {
             case 1:
                 resolverBacktracking();
