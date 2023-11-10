@@ -18,27 +18,30 @@ public class Main {
     }
 
     public static void resolverBacktracking() {
-        // Implemente a solução usando backtracking aqui
         System.out.println("Você escolheu resolver o problema usando Backtracking.");
     }
 
     public static void resolverDivisaoConquista() {
-        // Implemente a solução usando divisão e conquista aqui
         System.out.println("Você escolheu resolver o problema usando Divisão e Conquista.");
     }
 
-    public static void resolverProgramacaoDinamica() {
-        // Implemente a solução usando programação dinâmica aqui
-        System.out.println("Você escolheu resolver o problema usando Programação Dinâmica.");
+    public static void resolverProgramacaoDinamica(List<int[]> listaRotas, int numCaminhoes) {
+        for (int i = 0; i < listaRotas.size(); i++) {
+            System.out
+                    .println("Solução do problema com Programação Dinâmica para o conjunto de rotas " + (i + 1) + ":");
+            ProgramacaoDinamica.resolverProblemaDosCaminhoes(listaRotas.get(i), numCaminhoes);
+        }
     }
 
     public static void main(String[] args) {
         GeradorDeProblemas gerador = new GeradorDeProblemas();
-        List<int[]> lista = gerador.geracaoDeRotas(13, 10, 0.40); // Note que a dispersão é uma porcentagem em decimal
-        for (int[] is : lista) {
-            System.out.println(Arrays.toString(is));
+        int numCaminhoes = 3;
+        List<int[]> listaRotas = gerador.geracaoDeRotas(13, 10, 0.40);
+        for (int i = 0; i < listaRotas.size(); i++) {
+            System.out.println("Conjunto de rotas " + (i + 1) + ": " + Arrays.toString(listaRotas.get(i)));
         }
-        switch (menu()) {
+        int escolha = menu();
+        switch (escolha) {
             case 1:
                 resolverBacktracking();
                 break;
@@ -46,11 +49,12 @@ public class Main {
                 resolverDivisaoConquista();
                 break;
             case 3:
-                resolverProgramacaoDinamica();
+                resolverProgramacaoDinamica(listaRotas, numCaminhoes);
                 break;
             default:
                 System.out.println("Opção inválida.");
                 break;
         }
+        teclado.close();
     }
 }
