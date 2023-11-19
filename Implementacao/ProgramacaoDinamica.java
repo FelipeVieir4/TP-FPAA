@@ -50,33 +50,38 @@ public class ProgramacaoDinamica {
             distribuicao.add(new ArrayList<>());
         }
 
-        int caminhaoAtual = numCaminhoes - 1;
+        // A variável 'restante' vai controlar a quilometragem que ainda precisa ser
+        // distribuída para os caminhões.
         int restante = kmFinal;
+        // O array 'caminhaoQuilometragem' vai armazenar a quilometragem que cada
+        // caminhão está carregando.
+        int[] caminhaoQuilometragem = new int[numCaminhoes];
 
-        for (int i = N; i > 0 && caminhaoAtual >= 0; i--) {
-            // Verificar se o índice 'restante' está dentro dos limites
-            if (restante >= 0 && restante < dp[i].length && dp[i][restante] != Integer.MAX_VALUE / 2) {
-                if (i > 1 && restante - rotas[i - 1] >= 0 &&
-                        dp[i][restante] == dp[i - 1][restante - rotas[i - 1]] + rotas[i - 1]) {
-                    distribuicao.get(caminhaoAtual).add(rotas[i - 1]);
+        // Vamos percorrer a matriz 'dp' de trás para frente.
+        for (int i = N; i > 0; i--) {
+            // Percorre os caminhões de trás para frente também.
+            for (int c = numCaminhoes - 1; c >= 0; c--) {
+                // A rota atual pode ser levada pelo caminhão 'c' sem exceder a média?
+                if (restante - rotas[i - 1] >= 0 &&
+                        dp[i][restante] - dp[i - 1][restante - rotas[i - 1]] == rotas[i - 1] &&
+                        caminhaoQuilometragem[c] + rotas[i - 1] <= mediaKm) {
+                    // Se sim, adicione essa rota ao caminhão 'c' e atualize a quilometragem desse
+                    // caminhão.
+                    distribuicao.get(c).add(rotas[i - 1]);
+                    caminhaoQuilometragem[c] += rotas[i - 1];
                     restante -= rotas[i - 1];
-                }
-            } else {
-                break; // Interromper o loop se 'restante' estiver fora dos limites
-            }
-
-            // Atualizar 'restante' para o próximo caminhão, se necessário
-            if (restante == 0 && caminhaoAtual > 0) {
-                caminhaoAtual--;
-                if (i - 1 >= 0 && kmFinal - (numCaminhoes - 1 - caminhaoAtual) * mediaKm < dp[i - 1].length) {
-                    restante = dp[i - 1][kmFinal - (numCaminhoes - 1 - caminhaoAtual) * mediaKm];
-                } else {
-                    break; // Interromper o loop se o novo valor de 'restante' estiver fora dos limites
+                    break; // Sai do loop dos caminhões, porque a rota foi alocada.
                 }
             }
         }
 
-        Collections.reverse(distribuicao);
+        // As rotas estão em ordem reversa por causa do método de reconstrução, então
+        // precisamos reverter.
+        for (List<Integer> caminho : distribuicao) {
+            Collections.reverse(caminho);
+        }
+
         return distribuicao;
     }
+
 }
