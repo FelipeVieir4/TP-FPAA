@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -34,12 +33,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        GeradorDeProblemas gerador = new GeradorDeProblemas();
         int numCaminhoes = 3;
-        List<int[]> listaRotas = gerador.geracaoDeRotas(13, 10, 0.40);
-        for (int i = 0; i < listaRotas.size(); i++) {
-            System.out.println("Conjunto de rotas " + (i + 1) + ": " + Arrays.toString(listaRotas.get(i)));
-        }
+        List<int[]> listaRotas = GeradorDeProblemas.geracaoDeRotas(13, 10, 0.40);
         int escolha = menu();
         switch (escolha) {
             case 1:

@@ -16,7 +16,7 @@ public class GeradorDeProblemas {
      * que conjuntos com dispersões diferentes possam gerar resultados com
      * características muito diferentes. Este método
      * não está robusto contra nenhum tipo de erro de valores dos parâmetros.
-     * 
+     *
      * @param quantRotas  A quantidade de rotas que será utilizada em um teste. Deve
      *                    ser um número inteiro positivo preferencialmente maior que
      *                    5.
