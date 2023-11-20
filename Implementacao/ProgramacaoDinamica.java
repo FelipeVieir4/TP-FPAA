@@ -43,13 +43,12 @@ public class ProgramacaoDinamica {
         }
     }
 
-    private static List<List<Integer>> reconstruirCaminho(int[][] dp, int[] rotas, int N, int kmFinal, int numCaminhoes,
-            int mediaKm) {
+    private static List<List<Integer>> reconstruirCaminho(int[][] dp, int[] rotas, int N,
+            int kmFinal, int numCaminhoes, int mediaKm) {
         List<List<Integer>> distribuicao = new ArrayList<>();
         for (int i = 0; i < numCaminhoes; i++) {
             distribuicao.add(new ArrayList<>());
         }
-
         // A variável 'restante' vai controlar a quilometragem que ainda precisa ser
         // distribuída para os caminhões.
         int restante = kmFinal;

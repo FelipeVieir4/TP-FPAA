@@ -34,7 +34,7 @@ public class Main {
 
     public static void main(String[] args) {
         int numCaminhoes = 3;
-        List<int[]> listaRotas = GeradorDeProblemas.geracaoDeRotas(13, 1, 0.40);
+        List<int[]> listaRotas = GeradorDeProblemas.geracaoDeRotas(8, 1, 0.40);
         int escolha = menu();
         switch (escolha) {
             case 1:
