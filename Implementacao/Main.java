@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,9 +33,19 @@ public class Main {
         }
     }
 
+    public static void ordenarRotas(List<int[]> listaRotas) {
+        for (int[] rota : listaRotas) {
+            Arrays.sort(rota);
+        }
+    }
+
     public static void main(String[] args) {
         int numCaminhoes = 3;
         List<int[]> listaRotas = GeradorDeProblemas.geracaoDeRotas(8, 1, 0.40);
+        ordenarRotas(listaRotas);
+        for (int[] rota : listaRotas) {
+            System.out.println(Arrays.toString(rota));
+        }
         int escolha = menu();
         switch (escolha) {
             case 1:
