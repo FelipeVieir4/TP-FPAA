@@ -21,8 +21,15 @@ public class Main {
         System.out.println("Você escolheu resolver o problema usando Backtracking.");
     }
 
-    public static void resolverDivisaoConquista() {
-        System.out.println("Você escolheu resolver o problema usando Divisão e Conquista.");
+    public static void resolverDivisaoConquista(List<int[]> listaRotas, int numCaminhoes) {
+
+        for (int i = 0; i < listaRotas.size(); i++) {
+            System.out
+                    .println("Você escolheu resolver o problema usando Divisão e Conquista. " + (i + 1) + ":");
+            List<List<Integer>> problemaResolvido=Divisao_e_Conquista.resolverProblemaDosCaminhoes(listaRotas.get(i), numCaminhoes,0,listaRotas.get(i).length -1);
+//            Divisao_e_Conquista.estatistica(problemaResolvido,listaRotas.get(i),numCaminhoes);
+            Divisao_e_Conquista.imprimirRotas(problemaResolvido);
+        }
     }
 
     public static void resolverProgramacaoDinamica(List<int[]> listaRotas, int numCaminhoes) {
@@ -41,7 +48,7 @@ public class Main {
 
     public static void main(String[] args) {
         int numCaminhoes = 3;
-        List<int[]> listaRotas = GeradorDeProblemas.geracaoDeRotas(8, 1, 0.40);
+        List<int[]> listaRotas = GeradorDeProblemas.geracaoDeRotas(6, 1, 0.40);
         ordenarRotas(listaRotas);
         for (int[] rota : listaRotas) {
             System.out.println(Arrays.toString(rota));
@@ -52,7 +59,7 @@ public class Main {
                 resolverBacktracking();
                 break;
             case 2:
-                resolverDivisaoConquista();
+                resolverDivisaoConquista(listaRotas, numCaminhoes);
                 break;
             case 3:
                 resolverProgramacaoDinamica(listaRotas, numCaminhoes);
