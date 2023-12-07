@@ -26,8 +26,9 @@ public class Main {
         for (int i = 0; i < listaRotas.size(); i++) {
             System.out
                     .println("Você escolheu resolver o problema usando Divisão e Conquista. " + (i + 1) + ":");
-            List<List<Integer>> problemaResolvido=Divisao_e_Conquista.resolverProblemaDosCaminhoes(listaRotas.get(i), numCaminhoes,0,listaRotas.get(i).length -1);
-//            Divisao_e_Conquista.estatistica(problemaResolvido,listaRotas.get(i),numCaminhoes);
+            List<List<Integer>> problemaResolvido = Divisao_e_Conquista.resolverProblemaDosCaminhoes(listaRotas.get(i),
+                    numCaminhoes, 0, listaRotas.get(i).length - 1);
+            // Divisao_e_Conquista.estatistica(problemaResolvido,listaRotas.get(i),numCaminhoes);
             Divisao_e_Conquista.imprimirRotas(problemaResolvido);
         }
     }
@@ -36,7 +37,7 @@ public class Main {
         for (int i = 0; i < listaRotas.size(); i++) {
             System.out
                     .println("Solução do problema com Programação Dinâmica para o conjunto de rotas " + (i + 1) + ":");
-            ProgramacaoDinamica.resolverProblemaDosCaminhoes(listaRotas.get(i), numCaminhoes);
+            ProgramacaoDinamica.runProgDinamica(listaRotas.get(i), numCaminhoes);
         }
     }
 
