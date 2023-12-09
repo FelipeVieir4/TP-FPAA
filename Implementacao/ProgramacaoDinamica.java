@@ -12,7 +12,7 @@ public class ProgramacaoDinamica {
     public ProgramacaoDinamica() {
         this.tempoExecucao = 0.0f;
         this.comparacoes = 0;
-        this.solucao = new ArrayList<>(); // Inicializa com uma lista vazia
+        this.solucao = new ArrayList<>(); // Inicialize com uma lista vazia
         this.operacoesMatBasica = 0;
         this.totalChamadasRecursivas = 0;
     }
@@ -26,6 +26,7 @@ public class ProgramacaoDinamica {
         this.totalChamadasRecursivas = totalChamadasRecursivas;
     }
 
+    // Getters e Setters
     public float getTempoExecucao() {
         return tempoExecucao;
     }
@@ -67,58 +68,46 @@ public class ProgramacaoDinamica {
     }
 
     public void runProgDinamica(int[] rotas, int numCaminhoes) {
-        int totalKm = Arrays.stream(rotas).sum();
-        int targetKm = totalKm / numCaminhoes;
-        int[][] dp = new int[rotas.length + 1][targetKm + 1];
-        List<List<List<Integer>>> caminho = new ArrayList<>();
-
-        // Inicializações
-        for (int i = 0; i <= rotas.length; i++) {
-            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
-            caminho.add(new ArrayList<>());
-            for (int j = 0; j <= targetKm; j++) {
-                caminho.get(i).add(new ArrayList<>());
-            }
-        }
-        dp[0][0] = 0;
-
-        // Preenchimento da tabela
-        for (int i = 1; i <= rotas.length; i++) {
-            for (int j = 0; j <= targetKm; j++) {
-                dp[i][j] = dp[i - 1][j];
-                caminho.get(i).set(j, new ArrayList<>(caminho.get(i - 1).get(j)));
-
-                if (j >= rotas[i - 1] && dp[i - 1][j - rotas[i - 1]] != Integer.MAX_VALUE / 2) {
-                    if (dp[i - 1][j - rotas[i - 1]] + 1 < dp[i][j]) {
-                        dp[i][j] = dp[i - 1][j - rotas[i - 1]] + 1;
-                        List<Integer> novaRota = new ArrayList<>(caminho.get(i - 1).get(j - rotas[i - 1]));
-                        novaRota.add(i - 1);
-                        caminho.get(i).set(j, novaRota);
-                    }
-                }
-            }
-        }
-
-        // Encontrar a distribuição de rotas
-        List<Integer> distribuicao = caminho.get(rotas.length).get(targetKm);
-        List<List<Integer>> rotasPorCaminhao = new ArrayList<>();
+        // Ordenar as rotas para começar com as maiores, isso ajuda na distribuição
+        Arrays.sort(rotas);
+        int n = rotas.length;
+        List<Integer>[] caminhoes = new List[numCaminhoes];
         for (int i = 0; i < numCaminhoes; i++) {
-            rotasPorCaminhao.add(new ArrayList<>());
+            caminhoes[i] = new ArrayList<>();
         }
 
-        // Distribuir as rotas para os caminhões
-        for (int rota : distribuicao) {
-            rotasPorCaminhao.get(rota % numCaminhoes).add(rotas[rota]);
-        }
+        // Chama o método recursivo para distribuir as rotas
+        distribuirRotas(rotas, n - 1, caminhoes);
 
-        // Mostrar a distribuição de rotas
-        System.out.println("Distribuição de Rotas:");
         for (int i = 0; i < numCaminhoes; i++) {
             System.out.print("Caminhão " + (i + 1) + ": Rotas ");
-            for (Integer rota : rotasPorCaminhao.get(i)) {
+            for (int rota : caminhoes[i]) {
                 System.out.print(rota + " ");
             }
             System.out.println();
         }
+    }
+
+    private void distribuirRotas(int[] rotas, int indiceRota, List<Integer>[] caminhoes) {
+        // Condição de parada: todas as rotas foram distribuídas
+        if (indiceRota < 0) {
+            return;
+        }
+
+        // Encontra o caminhão com a menor quilometragem até o momento
+        int minIndex = 0;
+        int minKm = Integer.MAX_VALUE;
+        for (int i = 0; i < caminhoes.length; i++) {
+            int km = caminhoes[i].stream().mapToInt(Integer::intValue).sum();
+            if (km < minKm) {
+                minKm = km;
+                minIndex = i;
+            }
+        }
+
+        // Atribui a rota ao caminhão com a menor quilometragem e chama a função
+        // recursivamente
+        caminhoes[minIndex].add(rotas[indiceRota]);
+        distribuirRotas(rotas, indiceRota - 1, caminhoes);
     }
 }
