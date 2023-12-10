@@ -3,6 +3,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ProgramacaoDinamica {
+    private int[] rotas;
+    private int numCaminhoes;
     private float tempoExecucao;
     private int comparacoes;
     private List<Integer> solucao;
@@ -24,6 +26,14 @@ public class ProgramacaoDinamica {
         this.solucao = new ArrayList<>(); // ou inicialize com algum valor, se necessário
         this.operacoesMatBasica = operacoesMatBasica;
         this.totalChamadasRecursivas = totalChamadasRecursivas;
+    }
+
+    public int[] getRotas() {
+        return rotas;
+    }
+
+    public void setRotas(int[] rotas) {
+        this.rotas = rotas;
     }
 
     // Getters e Setters
@@ -68,46 +78,81 @@ public class ProgramacaoDinamica {
     }
 
     public void runProgDinamica(int[] rotas, int numCaminhoes) {
-        // Ordenar as rotas para começar com as maiores, isso ajuda na distribuição
         Arrays.sort(rotas);
-        int n = rotas.length;
-        List<Integer>[] caminhoes = new List[numCaminhoes];
-        for (int i = 0; i < numCaminhoes; i++) {
-            caminhoes[i] = new ArrayList<>();
+        this.rotas = rotas;
+        this.numCaminhoes = numCaminhoes;
+        double media = getMediaRotaDeCadaCaminhao();
+        int mediaCorrigidaPraCima = (int) Math.ceil(media); // 298.3 -> 299
+        int[][] tabela = criarTabelaComCabecalho(mediaCorrigidaPraCima);
+        imprimirTabela(tabela);
+        System.out.println("");
+        tabela = resolve(tabela, mediaCorrigidaPraCima);
+        imprimirTabela(tabela);
+    }
+
+    private int[][] resolve(int[][] tabela, int limiteColuna) {
+        for (int i = 0; i < rotas.length + 2; i++) {
+            for (int j = 0; j < limiteColuna + 2; j++) {
+                int maxVal = (j - 1 >= 0) ? tabela[i - 1][j] : 0;
+                int addVal = 0;
+                if (i < tabela.length && j >= tabela[i][0] && (j - tabela[i][0]) >= 0) {
+                    addVal = tabela[i - 1][j - tabela[i][0]] + tabela[i][0];
+                }
+
+                tabela[i][j] = encontraMax(maxVal, addVal);
+            }
         }
+        return tabela;
+    }
 
-        // Chama o método recursivo para distribuir as rotas
-        distribuirRotas(rotas, n - 1, caminhoes);
-
-        for (int i = 0; i < numCaminhoes; i++) {
-            System.out.print("Caminhão " + (i + 1) + ": Rotas ");
-            for (int rota : caminhoes[i]) {
-                System.out.print(rota + " ");
+    private void imprimirTabela(int[][] tabela) {
+        for (int i = 0; i < tabela.length; i++) {
+            for (int j = 0; j < tabela[i].length; j++) {
+                System.out.print(tabela[i][j] + " ");
             }
             System.out.println();
         }
     }
 
-    private void distribuirRotas(int[] rotas, int indiceRota, List<Integer>[] caminhoes) {
-        // Condição de parada: todas as rotas foram distribuídas
-        if (indiceRota < 0) {
-            return;
-        }
+    private int[][] criarTabelaComCabecalho(int limiteColuna) {
+        int valorInicialColuna = rotas[0];
+        int valorFinalColuna = limiteColuna - rotas[0] + 2;
 
-        // Encontra o caminhão com a menor quilometragem até o momento
-        int minIndex = 0;
-        int minKm = Integer.MAX_VALUE;
-        for (int i = 0; i < caminhoes.length; i++) {
-            int km = caminhoes[i].stream().mapToInt(Integer::intValue).sum();
-            if (km < minKm) {
-                minKm = km;
-                minIndex = i;
+        int indiceInicialRota = 0;
+        int[][] tabela = new int[rotas.length + 2][valorFinalColuna];
+
+        // CRIAR O VERTICAL -> 0, 1, 2, 3, 4
+        for (int i = 2; i < rotas.length + 2; i++) {
+            for (int j = 0; j < 1; j++) {
+                tabela[i][j] = rotas[indiceInicialRota];
+                indiceInicialRota++;
             }
         }
 
-        // Atribui a rota ao caminhão com a menor quilometragem e chama a função
-        // recursivamente
-        caminhoes[minIndex].add(rotas[indiceRota]);
-        distribuirRotas(rotas, indiceRota - 1, caminhoes);
+        // CRIAR O HORIZONTAL -> 0 1 2 3 (média = 3)
+        for (int i = 0; i < 1; i++) {
+            for (int j = 1; j < valorFinalColuna; j++) {
+                tabela[i][j] = valorInicialColuna;
+                valorInicialColuna++;
+            }
+        }
+
+        return tabela;
+    }
+
+    private int encontraMax(int atual, int novo) {
+        if (atual <= novo) {
+            return novo;
+        }
+        return atual;
+    }
+
+    private double getMediaRotaDeCadaCaminhao() {
+        int soma = 0;
+        for (int i = 0; i < rotas.length; i++) {
+            soma += rotas[i];
+        }
+        double media = soma / numCaminhoes;
+        return media;
     }
 }
