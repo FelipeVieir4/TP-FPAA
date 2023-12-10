@@ -2,22 +2,36 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class Divisao_e_Conquista {
+     static int totalChamadasRecusivas =0;
+     static int comparacoes =0;
+     static int operacoesMatBasica=0;
 
   public static List<List<Integer>> resolverProblemaDosCaminhoes(int[] rotas, int numCaminhoes, int inicio ,int fim ) {
+      totalChamadasRecusivas +=1;
 
-      if(fim - inicio <= numCaminhoes ){
+      if(fim - inicio + 1 <= numCaminhoes ){
+          comparacoes++;
+          operacoesMatBasica++;
           List<List<Integer>> lista = new ArrayList<List<Integer>>();
           for (int i =0;i<numCaminhoes;i++){
+              comparacoes++;
+              operacoesMatBasica++;
               lista.add(new ArrayList<>());
-              lista.get(i).add(rotas[inicio + i]);
+              if(inicio + i <= fim){
+                  lista.get(i).add(rotas[inicio + i]);
+                  comparacoes++;
+                  operacoesMatBasica++;
+              }
           }
           lista = ordena(lista);
           return lista;
 
       }else{
         int meio = (inicio + fim)/2;
+          operacoesMatBasica = operacoesMatBasica+2;
           List<List<Integer>> esquerda = resolverProblemaDosCaminhoes(rotas, numCaminhoes, inicio, meio);
           List<List<Integer>> direita = resolverProblemaDosCaminhoes(rotas, numCaminhoes, meio + 1, fim);
+          operacoesMatBasica++;
 
         return combinarRotas(esquerda,direita);
       }
@@ -26,18 +40,24 @@ public class Divisao_e_Conquista {
 
 
     public static List<List<Integer>> combinarRotas(List<List<Integer>> esquerda, List<List<Integer>> direita) {
-      int end =direita.size() -1;
+      int end = direita.size() -1;
+        operacoesMatBasica++;
+
 
         List<List<Integer>> nova = new ArrayList<List<Integer>>();
         for(int z =0;z< esquerda.size() ;z++){
+            comparacoes++;
+            operacoesMatBasica++;
             nova.add(new ArrayList<>());
         }
 
       for(int i=0;i<esquerda.size();i++){
-
+          comparacoes++;
           nova.get(i).addAll(esquerda.get(i));
           nova.get(i).addAll(direita.get(end));
           end--;
+          operacoesMatBasica++;
+
       }
 
 
@@ -62,8 +82,8 @@ public class Divisao_e_Conquista {
     public static void imprimirRotas(List<List<Integer>> lista) {
       System.out.println("As melhores rotas encontradas foram");
         for (int i = 0; i < lista.size(); i++) {
-            int cont = i+1;
-            System.out.println("Rota:" + cont + " " + lista.get(i));
+            int contador = i+1;
+            System.out.println("Rota:" + contador + " " + lista.get(i));
         }
 
     }
