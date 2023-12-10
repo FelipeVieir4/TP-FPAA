@@ -17,8 +17,18 @@ public class Main {
         return opcao;
     }
 
-    public static void resolverBacktracking() {
+    public static void resolverBacktracking(List<int[]> listaRotas, int numCaminhoes) {
         System.out.println("Você escolheu resolver o problema usando Backtracking.");
+
+        for (int[] is : listaRotas) {
+            Backtracking backtracking = new Backtracking();
+            try {
+                backtracking.runBackTracking(is, numCaminhoes);
+                backtracking.toString();
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
     public static void resolverDivisaoConquista(List<int[]> listaRotas, int numCaminhoes) {
@@ -65,11 +75,11 @@ public class Main {
 
         ordenarRotas(listaRotas);
 
-        // resolverBacktracking();
+        // resolverBacktracking(listaRotas, numCaminhoes);
 
         // resolverDivisaoConquista(listaRotas, numCaminhoes);
 
-        resolverProgramacaoDinamica(listaRotas, numCaminhoes);
+        // resolverProgramacaoDinamica(listaRotas, numCaminhoes);
 
         teclado.close();
     }
