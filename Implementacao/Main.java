@@ -58,24 +58,13 @@ public class Main {
                         29, 55, 43, 29, 32, 44, 55, 29, 53, 30, 24, 27 });
 
         ordenarRotas(listaRotas);
-        for (int[] rota : listaRotas) {
-            System.out.println(Arrays.toString(rota));
-        }
-        int escolha = menu();
-        switch (escolha) {
-            case 1:
-                resolverBacktracking();
-                break;
-            case 2:
-                resolverDivisaoConquista(listaRotas, numCaminhoes);
-                break;
-            case 3:
-                resolverProgramacaoDinamica(listaRotas, numCaminhoes);
-                break;
-            default:
-                System.out.println("Opção inválida.");
-                break;
-        }
+
+        resolverBacktracking();
+
+        resolverDivisaoConquista(listaRotas, numCaminhoes);
+
+        resolverProgramacaoDinamica(listaRotas, numCaminhoes);
+
         teclado.close();
     }
 }
