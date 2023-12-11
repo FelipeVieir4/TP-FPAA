@@ -14,6 +14,7 @@ public class ProgramacaoDinamica {
     private LocalDateTime horaInicioExecucao;
     private int desvioPadraoDasRotas;
     private int quilometragemMediaDesejadaPorCaminhao;
+    private List<List<Integer>> tabelas;
 
     private void setHoraInicioExecucao() {
         horaInicioExecucao = LocalDateTime.now();
@@ -31,7 +32,7 @@ public class ProgramacaoDinamica {
         this.numCaminhoes = 0;
         this.tempoExecucao = 0.0f;
         this.comparacoes = 0;
-        this.solucao = new ArrayList<List<Integer>>();
+        this.solucao = new ArrayList<>();
         this.operacoesMatematica = 0;
         this.totalChamadasRecursivas = 0;
         this.desvioPadraoDasRotas = 0;
@@ -43,91 +44,82 @@ public class ProgramacaoDinamica {
         Arrays.sort(rotas);
         this.rotas = rotas;
         this.numCaminhoes = numCaminhoes;
-        double media = getMediaRotaDeCadaCaminhao();
-        int mediaCorrigidaPraCima = (int) Math.ceil(media); // 298.3 -> 299
-        int[][] tabela = criarTabelaComCabecalho(mediaCorrigidaPraCima);
-        imprimirTabela(tabela);
-        System.out.println("");
-        tabela = resolve(tabela);
-        imprimirTabela(tabela);
+        calculaKmMediaDesejadaPorCaminhao();
+
+        List<List<List<Integer>>> tabelas = criarTabelas(rotas, numCaminhoes, quilometragemMediaDesejadaPorCaminhao);
+
+        imprimirTabelas(tabelas);
+
+        imprimirSolucao();
+
     }
 
-    private int[][] resolve(int[][] tabela) {
-        for (int i = 2; i < tabela.length; i++) {
-            for (int j = 1; j < tabela[0].length; j++) {
-                int valorMaximoAtual = tabela[i - 1][j];
-                int valorRotaAtual = tabela[i][0];
-                if (j >= valorRotaAtual) {
-                    addComparacao();
-                    int indiceRestante = j - valorRotaAtual;
-                    addOperacaoMatematica();
+    public List<List<List<Integer>>> criarTabelas(int[] rotas, int numCaminhoes, int media) {
+        List<List<List<Integer>>> tabelas = new ArrayList<>();
 
-                    int novoValorInserido = tabela[i - 1][indiceRestante] + valorRotaAtual;
-                    addOperacaoMatematica();
+        for (int caminhao = 0; caminhao < numCaminhoes; caminhao++) {
+            List<List<Integer>> tabela = new ArrayList<>();
 
-                    tabela[i][j] = encontraMax(valorMaximoAtual, novoValorInserido);
-                    addComparacao();
-                } else {
-                    tabela[i][j] = valorMaximoAtual;
-                }
+            List<Integer> cabecalho = new ArrayList<>();
+            cabecalho.add(0); // Coluna inicial com 0
+            for (int i = rotas[0]; i <= media; i++) {
+                cabecalho.add(i);
             }
+            tabela.add(cabecalho);
+
+            for (int rota : rotas) {
+                List<Integer> linha = new ArrayList<>();
+                linha.add(rota);
+                for (int i = 1; i < cabecalho.size(); i++) {
+                    linha.add(0);
+                }
+                tabela.add(linha);
+            }
+
+            tabelas.add(tabela);
         }
-        return tabela;
+
+        return tabelas;
     }
 
-    private int encontraMax(int atual, int novo) {
-        addComparacao(); // Contabiliza a comparação
-        if (atual < novo) {
-            return novo;
-        }
-        return atual;
-    }
-
-    private void imprimirTabela(int[][] tabela) {
-        for (int i = 0; i < tabela.length; i++) {
-            for (int j = 0; j < tabela[i].length; j++) {
-                System.out.print(tabela[i][j] + " ");
+    public void imprimirTabelas(List<List<List<Integer>>> tabelas) {
+        for (int i = 0; i < tabelas.size(); i++) {
+            System.out.println("Tabela para Caminhão " + (i + 1) + ":");
+            for (List<Integer> linha : tabelas.get(i)) {
+                for (int valor : linha) {
+                    System.out.print(valor + " ");
+                }
+                System.out.println();
             }
             System.out.println();
         }
     }
 
-    private int[][] criarTabelaComCabecalho(int limiteColuna) {
-        int valorInicialColuna = rotas[0];
-        int valorFinalColuna = limiteColuna - rotas[0] + 2;
-
-        int indiceInicialRota = 0;
-        int[][] tabela = new int[rotas.length + 2][valorFinalColuna];
-
-        // CRIAR O VERTICAL -> 0, 1, 2, 3, 4
-        for (int i = 2; i < rotas.length + 2; i++) {
-            for (int j = 0; j < 1; j++) {
-                tabela[i][j] = rotas[indiceInicialRota];
-                indiceInicialRota++;
-                addOperacaoMatematica();
-            }
+    private void imprimirSolucao() {
+        for (int i = 0; i < solucao.size(); i++) {
+            System.out.println("Rotas para caminhão " + (i + 1) + ": " + solucao.get(i));
         }
-
-        // CRIAR O HORIZONTAL -> 0 1 2 3 (média = 3)
-        for (int i = 0; i < 1; i++) {
-            for (int j = 1; j < valorFinalColuna; j++) {
-                tabela[i][j] = valorInicialColuna;
-                valorInicialColuna++;
-                addOperacaoMatematica();
-            }
-        }
-
-        return tabela;
     }
 
-    private double getMediaRotaDeCadaCaminhao() {
-        int soma = 0;
-        for (int i = 0; i < rotas.length; i++) {
-            soma += rotas[i];
+    private double calcularSomaRotas() {
+        double somaRotas = 0;
+        for (int rota : rotas) {
             addOperacaoMatematica();
+            somaRotas += rota;
         }
-        double media = soma / numCaminhoes;
+        return somaRotas;
+    }
+
+    private void calculaKmMediaDesejadaPorCaminhao() {
+        double somaRotas = calcularSomaRotas();
         addOperacaoMatematica();
-        return media;
+        double media = somaRotas / numCaminhoes;
+        addOperacaoMatematica();
+        int mediaParaCima = (int) Math.ceil(media);
+        setQuilometragemMediaDesejadaPorCaminhao(mediaParaCima);
+    }
+
+    public void setQuilometragemMediaDesejadaPorCaminhao(int quilometragemMediaPorCaminhaoDesejado) {
+        this.quilometragemMediaDesejadaPorCaminhao = quilometragemMediaPorCaminhaoDesejado;
     }
 }
