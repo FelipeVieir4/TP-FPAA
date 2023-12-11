@@ -1,7 +1,6 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,175 +10,93 @@ import java.util.List;
  */
 public class Backtracking implements Comparable<Backtracking> {
 
-    private int[] rotas;
+    // ATRIBUTOS
+    private int[] listaInicialRotas;
+    private List<Integer> listaRotasPendentes;
     private int numCaminhoes;
     private float tempoExecucao;
-    private int comparacoes;
-    private List<List<Integer>> solucao;
+    private int quilometragemMediaDesejadaPorCaminhao;
+    private List<List<Integer>> solucaoFinal;
     private int operacoesMatematica;
     private int totalChamadasRecursivas;
+    private int comparacoes;
     private LocalDateTime horaInicioExecucao;
-    private int desvioPadraoDasRotas;
-    private int quilometragemMediaDesejadaPorCaminhao;
+
+    // VARIÁVEIS GLOBAIS
+    private int melhorSoma = Integer.MAX_VALUE;
+    private List<Integer> melhorSubconjunto = new ArrayList<>();
 
     // Construtor sem argumentos
     public Backtracking() {
         this.numCaminhoes = 0;
         this.tempoExecucao = 0.0f;
         this.comparacoes = 0;
-        this.solucao = new ArrayList<List<Integer>>();
         this.operacoesMatematica = 0;
         this.totalChamadasRecursivas = 0;
-        this.desvioPadraoDasRotas = 0;
         this.quilometragemMediaDesejadaPorCaminhao = 0;
+
     }
 
-    /**
-     * Método que calcula a otimização das rotas por caminhão.
-     *
-     * @param rotas        array de valores inteiros que representam a distância.
-     * @param numCaminhoes quantidade de caminhões disponíveis
-     * @return uma lista de inteiros, cada indice da lista é um caminhão e o array
-     *         de inteiros é a rota sugerida.
-     * @throws InterruptedException
-     */
     public List<List<Integer>> runBackTracking(int[] rotas, int numCaminhoes) throws InterruptedException {
-        this.rotas = rotas;
+        this.listaInicialRotas = rotas;
         this.numCaminhoes = numCaminhoes;
+        this.solucaoFinal = new ArrayList<List<Integer>>(numCaminhoes);
         calculaKmMediaDesejadaPorCaminhao();
-        System.out.println(quilometragemMediaDesejadaPorCaminhao);
-        calcularDesvioPadraoRotas();
-        System.out.println(desvioPadraoDasRotas);
-        System.out.println(calcularSomaRotas());
         setHoraInicioExecucao();
         List<Integer> rotasCandidatas = new ArrayList<>();
         for (int rota : rotas) {
             rotasCandidatas.add(rota);
         }
-        List<List<Integer>> solucaoCandidata = new ArrayList<>();
+        this.listaRotasPendentes = rotasCandidatas;
+        System.out.println("média desejada: " + quilometragemMediaDesejadaPorCaminhao);
+        System.out.println(
+                "Rotas restantes: " + listaRotasPendentes + " total: " + somarItensLista(listaRotasPendentes));
         for (int i = 0; i < numCaminhoes; i++) {
-            solucaoCandidata.add(new ArrayList<>());
+            backTracking(listaRotasPendentes, 0, 0, new ArrayList<>());
+            System.out.println("Caminhão " + (i + 1) + " --> " + melhorSubconjunto + " distância total: " + melhorSoma);
+            atualizaListaRotasPendentes(melhorSubconjunto);
+            melhorSubconjunto = new ArrayList<>();
+            melhorSoma = Integer.MAX_VALUE;
+            System.out.println(
+                    "Rotas restantes: " + listaRotasPendentes + " total: " + somarItensLista(listaRotasPendentes));
         }
-        int somaRotasSolucao = 0;
-        int indiceCaminhao = 0;
-        this.solucao = backTracking(rotasCandidatas, solucaoCandidata, somaRotasSolucao, indiceCaminhao);
+
         // imprimir(solucao);
-        return solucao;
+        return solucaoFinal;
     }
 
-    private void imprimir(List<List<Integer>> solucao) {
-        for (int i = 0; i < solucao.size(); i++) {
-            List<Integer> lista = solucao.get(i);
-            System.out.println("Caminhão 0" + (i+1) + ": " + somarLista(lista) + " km totais");
-            for (Integer rota : lista) {
-                System.out.print(" " + rota + " ");
-            }
-            System.out.println(System.lineSeparator());
+    // Função de backtracking para explorar todas as possíveis combinações
+    private void backTracking(List<Integer> numeros, int indice, int somaAtual, List<Integer> subconjuntoAtual)
+            throws InterruptedException {
+
+        if (verificaTempoExecucaoEmSegundos() > 30) {
+            throw new InterruptedException("Timeout - o problema levará mais de 30 segundos para ser resolvido");
+        }
+
+        // Verifica se a soma atual é mais próxima do alvo do que a melhor soma anterior
+        if (Math.abs(quilometragemMediaDesejadaPorCaminhao - somaAtual) < Math
+                .abs(quilometragemMediaDesejadaPorCaminhao - melhorSoma)) {
+            // Atualiza a melhor soma e o melhor subconjunto
+            melhorSoma = somaAtual;
+            melhorSubconjunto = new ArrayList<>(subconjuntoAtual);
+        }
+
+        // Itera sobre os elementos restantes na lista
+        for (int i = indice; i < numeros.size(); i++) {
+            int numero = numeros.get(i);
+            subconjuntoAtual.add(numero);
+            backTracking(numeros, i + 1, somaAtual + numero, subconjuntoAtual);
+            subconjuntoAtual.remove(subconjuntoAtual.size() - 1);
         }
     }
 
-    // /**
-
-    private List<List<Integer>> backTracking(List<Integer> rotasCandidatas,
-            List<List<Integer>> solucoesCandidatas,
-            int somaRotasSolucao, int indiceCaminhao) throws InterruptedException {
-
-        if (indiceCaminhao == numCaminhoes) {
-            return solucoesCandidatas;
+    private void atualizaListaRotasPendentes(List<Integer> rotaPronta) {
+        for (Integer integer : rotaPronta) {
+            listaRotasPendentes.remove(integer);
         }
-        // if (verificaTempoExecucaoEmSegundos() > 30) {
-        // throw new InterruptedException("Timeout - o problema levará mais de 30
-        // segundos para ser resolvido");
-        // }
-
-        imprimir(solucoesCandidatas);
-        List<Integer> solucao = solucoesCandidatas.get(indiceCaminhao);
-
-        int rotaCandidata = rotasCandidatas.get(0);
-
-        if (somaRotasSolucao + rotaCandidata <= quilometragemMediaDesejadaPorCaminhao
-                + desvioPadraoDasRotas) {
-            solucao.add(rotaCandidata);
-            int novaSomaRotas = somaRotasSolucao + rotaCandidata;
-            List<Integer> novasRotasCandidatas = new ArrayList<>(rotasCandidatas);
-            novasRotasCandidatas.remove(0);
-            List<List<Integer>> solucoesCandidatasAtualizadas = new ArrayList<>(solucoesCandidatas);
-            solucoesCandidatasAtualizadas.set(indiceCaminhao, solucao);
-
-            if (!ehSolucao(novaSomaRotas)) {
-
-                return backTracking(novasRotasCandidatas, solucoesCandidatasAtualizadas,
-                        novaSomaRotas,
-                        indiceCaminhao);
-
-            } else {
-
-                return backTracking(novasRotasCandidatas, solucoesCandidatasAtualizadas,
-                        0, indiceCaminhao + 1);
-            }
-
-        }
-
-        return solucoesCandidatas; // Não foi possível encontrar uma solução a partir deste ponto
-
+        ;
     }
 
-    private boolean ehSolucao(int somaRotasSolucao) {
-        addOperacaoMatematica();
-        int limiteInferior = quilometragemMediaDesejadaPorCaminhao - desvioPadraoDasRotas;
-        addOperacaoMatematica();
-        int limiteSuperior = quilometragemMediaDesejadaPorCaminhao + desvioPadraoDasRotas;
-
-        if ((somaRotasSolucao > limiteInferior && somaRotasSolucao < limiteSuperior)) {
-            addComparacao();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Calcula o desvio padrão das rotas.
-     *
-     * @return O desvio padrão das rotas.
-     */
-    private void calcularDesvioPadraoRotas() throws IllegalStateException {
-        if (rotas == null || rotas.length == 0) {
-            throw new IllegalStateException("A lista de rotas está vazia ou não foi inicializada.");
-        }
-
-        double media = calcularMediaRotas();
-
-        // Calcular a soma dos quadrados das diferenças entre cada rota e a média
-        double somaQuadradosDiferencas = 0;
-        for (int rota : rotas) {
-            addOperacaoMatematica();
-            double diferenca = rota - media;
-            addOperacaoMatematica();
-            addOperacaoMatematica();
-            somaQuadradosDiferencas += diferenca * diferenca;
-        }
-        addOperacaoMatematica();
-        // Calcular a variância e, em seguida, o desvio padrão
-        double variancia = somaQuadradosDiferencas / rotas.length;
-        addOperacaoMatematica();
-        int desvioPadrao = (int) Math.ceil(Math.sqrt(variancia));
-        setDesvioPadraoDasRotas(desvioPadrao);
-    }
-
-    /**
-     * Calcula a média das rotas.
-     *
-     * @return A média das rotas.
-     */
-    private double calcularMediaRotas() {
-        double somaRotas = calcularSomaRotas();
-        addOperacaoMatematica();
-        return somaRotas / rotas.length;
-    }
-
-    /**
-     * Calcula a KM média desejada para cada caminhão.
-     */
     private void calculaKmMediaDesejadaPorCaminhao() {
         double somaRotas = calcularSomaRotas();
         addOperacaoMatematica();
@@ -189,44 +106,23 @@ public class Backtracking implements Comparable<Backtracking> {
         setQuilometragemMediaDesejadaPorCaminhao(mediaParaCima);
     }
 
-    /**
-     * Calcula a soma das rotas.
-     *
-     * @return A soma das rotas.
-     */
+    private double somarItensLista(List<Integer> l) {
+        double soma = 0;
+        for (Integer integer : l) {
+            soma += integer;
+        }
+        return soma;
+    }
+
     private double calcularSomaRotas() {
         double somaRotas = 0;
-        for (int rota : rotas) {
+        for (int rota : listaInicialRotas) {
             addOperacaoMatematica();
             somaRotas += rota;
         }
         return somaRotas;
     }
 
-    private int somarLista(List<Integer> lista) {
-        int soma = 0;
-        for (Integer integer : lista) {
-            soma += integer;
-        }
-
-        return soma;
-    }
-
-    private int[] ordenaDesc(int[] array) {
-        Arrays.sort(array);
-        int n = array.length;
-        for (int i = 0; i < n / 2; i++) {
-            int temp = array[i];
-            array[i] = array[n - 1 - i];
-            array[n - 1 - i] = temp;
-        }
-
-        return array;
-    }
-
-    /**
-     * Adiciona uma operação matemática básica.
-     */
     private void addOperacaoMatematica() {
         operacoesMatematica++;
     }
@@ -235,61 +131,29 @@ public class Backtracking implements Comparable<Backtracking> {
         comparacoes++;
     }
 
-    /**
-     * Adiciona uma chamada recursiva.
-     */
     private void addChamadaRecursiva() {
         totalChamadasRecursivas++;
     }
 
-    /**
-     * Inicia a execução, registrando o horário de início.
-     */
     private void setHoraInicioExecucao() {
         horaInicioExecucao = LocalDateTime.now();
     }
 
-    /**
-     * Verifica o tempo de execução em segundos.
-     *
-     * @return O tempo de execução em segundos.
-     */
     private long verificaTempoExecucaoEmSegundos() {
         LocalDateTime horaAtual = LocalDateTime.now();
         Duration duracao = Duration.between(horaInicioExecucao, horaAtual);
         return duracao.getSeconds();
     }
 
-    /**
-     * Verifica o tempo de execução em segundos como float.
-     *
-     * @return O tempo de execução em segundos como float.
-     */
-    // private float verificaTempoExecucao() {
-    // LocalDateTime horaAtual = LocalDateTime.now();
-    // Duration duracao = Duration.between(horaInicioExecucao, horaAtual);
-    // long segundos = duracao.getSeconds();
-    // return segundos + duracao.getNano() / 1_000_000_000.0f;
-    // }
-
-    // OVERTIDER AREA
-
-    /**
-     * Implementação do método toString para representação em string do objeto.
-     *
-     * @return String representando o objeto Backtracking.
-     */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
 
         result.append("RESULTADO POR BACKTRACKING");
         result.append(System.lineSeparator());
-        result.append("Total de rotas: ").append(rotas.length).append(" opções");
+        result.append("Total de rotas: ").append(listaInicialRotas.length).append(" opções");
         result.append(System.lineSeparator());
         result.append("Soma das rotas: ").append(calcularSomaRotas());
-        result.append(System.lineSeparator());
-        result.append("Desvio Padrão: ").append(desvioPadraoDasRotas);
         result.append(System.lineSeparator());
         result.append("Quantidade de caminhões: ").append(numCaminhoes);
         result.append(System.lineSeparator());
@@ -301,11 +165,11 @@ public class Backtracking implements Comparable<Backtracking> {
         result.append(System.lineSeparator());
         result.append(System.lineSeparator());
 
-        if (solucao == null) {
+        if (solucaoFinal == null) {
             result.append("Sem solução...");
         } else {
-            for (int i = 0; i < solucao.size(); i++) {
-                List<Integer> caminhao = solucao.get(i);
+            for (int i = 0; i < solucaoFinal.size(); i++) {
+                List<Integer> caminhao = solucaoFinal.get(i);
                 int total = 0;
 
                 result.append("Caminhão 0").append(i).append(": ");
@@ -341,8 +205,8 @@ public class Backtracking implements Comparable<Backtracking> {
                 comparacoes == that.comparacoes &&
                 operacoesMatematica == that.operacoesMatematica &&
                 totalChamadasRecursivas == that.totalChamadasRecursivas &&
-                rotas.equals(that.rotas) &&
-                solucao.equals(that.solucao) &&
+                listaInicialRotas.equals(that.listaInicialRotas) &&
+                solucaoFinal.equals(that.solucaoFinal) &&
                 horaInicioExecucao.equals(that.horaInicioExecucao);
     }
 
@@ -353,11 +217,11 @@ public class Backtracking implements Comparable<Backtracking> {
      */
     @Override
     public int hashCode() {
-        int result = rotas.hashCode();
+        int result = listaInicialRotas.hashCode();
         result = 31 * result + numCaminhoes;
         result = 31 * result + (tempoExecucao != +0.0f ? Float.floatToIntBits(tempoExecucao) : 0);
         result = 31 * result + comparacoes;
-        result = 31 * result + solucao.hashCode();
+        result = 31 * result + solucaoFinal.hashCode();
         result = 31 * result + operacoesMatematica;
         result = 31 * result + totalChamadasRecursivas;
         result = 31 * result + horaInicioExecucao.hashCode();
@@ -377,9 +241,6 @@ public class Backtracking implements Comparable<Backtracking> {
     }
 
     // Getters e Setters...
-    public void setDesvioPadraoDasRotas(int desvioPadraoDasRotas) {
-        this.desvioPadraoDasRotas = desvioPadraoDasRotas;
-    }
 
     public void setQuilometragemMediaDesejadaPorCaminhao(int quilometragemMediaPorCaminhaoDesejado) {
         this.quilometragemMediaDesejadaPorCaminhao = quilometragemMediaPorCaminhaoDesejado;
