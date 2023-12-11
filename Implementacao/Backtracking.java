@@ -57,9 +57,9 @@ public class Backtracking implements Comparable<Backtracking> {
             atualizaSolucaoFinal(i);
             atualizaListaRotasPendentes(melhorSubconjunto);
         }
+        setTempoExecucao();
         return solucaoFinal;
     }
-
 
     private void backTracking(List<Integer> numeros, int indice, int somaAtual, List<Integer> subconjuntoAtual)
             throws InterruptedException {
@@ -69,6 +69,9 @@ public class Backtracking implements Comparable<Backtracking> {
         }
 
         // Verifica se a soma atual é mais próxima do alvo do que a melhor soma anterior
+        addComparacao();
+        addOperacaoMatematica();
+        addOperacaoMatematica();
         if (Math.abs(quilometragemMediaDesejadaPorCaminhao - somaAtual) < Math
                 .abs(quilometragemMediaDesejadaPorCaminhao - melhorSoma)) {
             // Atualiza a melhor soma e o melhor subconjunto
@@ -80,12 +83,11 @@ public class Backtracking implements Comparable<Backtracking> {
         for (int i = indice; i < numeros.size(); i++) {
             int numero = numeros.get(i);
             subconjuntoAtual.add(numero);
+            addChamadaRecursiva();
             backTracking(numeros, i + 1, somaAtual + numero, subconjuntoAtual);
             subconjuntoAtual.remove(subconjuntoAtual.size() - 1);
         }
     }
-
-    
 
     private void atualizaSolucaoFinal(int caminhaoIndex) {
         solucaoFinal.set(caminhaoIndex, melhorSubconjunto);
@@ -168,10 +170,25 @@ public class Backtracking implements Comparable<Backtracking> {
             result.append("Sem solução...");
         } else {
             for (int i = 0; i < solucaoFinal.size(); i++) {
-                result.append("Caminhão " + (i + 1) + solucaoFinal.get(i) + "  total km da rota: "+somarItensLista(solucaoFinal.get(i)));
+                result.append("Caminhão " + (i + 1) + solucaoFinal.get(i) + "  total km da rota: "
+                        + somarItensLista(solucaoFinal.get(i)));
                 result.append(System.lineSeparator());
             }
         }
+        result.append(System.lineSeparator());
+        result.append(System.lineSeparator());
+        result.append("Estatísticas... ");
+        result.append(System.lineSeparator());
+        result.append(System.lineSeparator());
+
+        result.append("Tempo de execução: " + tempoExecucao + " segundos");
+        result.append(System.lineSeparator());
+        result.append("Total de comparações: " + comparacoes);
+        result.append(System.lineSeparator());
+        result.append("Total de chamadas recursivas: " + totalChamadasRecursivas);
+        result.append(System.lineSeparator());
+        result.append("Total de operações matemáricas básicas (+,-,/,*): " + operacoesMatematica);
+        result.append(System.lineSeparator());
 
         return result.toString();
     }
@@ -231,8 +248,14 @@ public class Backtracking implements Comparable<Backtracking> {
 
     // Getters e Setters...
 
-    public void setQuilometragemMediaDesejadaPorCaminhao(int quilometragemMediaPorCaminhaoDesejado) {
+    private void setQuilometragemMediaDesejadaPorCaminhao(int quilometragemMediaPorCaminhaoDesejado) {
         this.quilometragemMediaDesejadaPorCaminhao = quilometragemMediaPorCaminhaoDesejado;
+    }
+
+    private void setTempoExecucao() {
+        LocalDateTime horaAtual = LocalDateTime.now();
+        Duration duracao = Duration.between(horaInicioExecucao, horaAtual);
+        this.tempoExecucao = duracao.getSeconds();
     }
 
 }
