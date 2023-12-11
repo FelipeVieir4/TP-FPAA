@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class ProgramacaoDinamica {
     private int[] rotas;
+    private List<Integer> listaRotasPendentes;
     private int numCaminhoes;
     private float tempoExecucao;
     private int comparacoes;
@@ -58,48 +59,89 @@ public class ProgramacaoDinamica {
         Arrays.sort(rotas);
         this.rotas = rotas;
         this.numCaminhoes = numCaminhoes;
+        listaRotasPendentes = new ArrayList<>();
+        for (int rota : rotas) {
+            listaRotasPendentes.add(rota);
+        }
+
         calculaKmMediaDesejadaPorCaminhao();
 
-        List<List<List<Integer>>> tabelas = criarTabelas(rotas, numCaminhoes, quilometragemMediaDesejadaPorCaminhao);
+        List<List<List<Integer>>> tabelas = criarTabelas(listaRotasPendentes, numCaminhoes,
+                quilometragemMediaDesejadaPorCaminhao);
 
         imprimirTabelas(tabelas);
 
-        preencherTabelas(tabelas, rotas, quilometragemMediaDesejadaPorCaminhao);
+        gerarRota(tabelas.get(0));
 
-        imprimirTabelas(tabelas);
+        // preencherTabelas(tabelas, rotas, quilometragemMediaDesejadaPorCaminhao);
 
-        reconstruirSolucao(tabelas);
+        // imprimirTabelas(tabelas);
 
-        imprimirSolucao();
+        reconstroiCaminhoCadaCaminhao(tabelas.get(0));
 
+        // reconstruirSolucao(tabelas);
+
+        // imprimirSolucao();
+
+    }
+
+    private void reconstroiCaminhoCadaCaminhao(List<List<Integer>> tabela) {
+        int index = tabela.size();
+        int linha = tabela.size();
+        int coluna = tabela.get(0).size();
+
+        do {
+            int elementoAtual = tabela.get(linha - 1).get(coluna - 1);
+            linha--;
+        } while (linha > -1);
+
+    }
+
+    private void gerarRota(List<List<Integer>> tabela) {
+        for (int i = 1; i < tabela.size(); i++) {
+            for (int j = 1; j < tabela.get(0).size(); j++) {
+                int rotaAtual = tabela.get(i).get(0);
+                if (rotaAtual <= j) {
+                    addComparacao();
+
+                    int valorCalculado = tabela.get(i - 1).get(j - rotaAtual) + rotaAtual;
+                    valorCalculado = Math.min(valorCalculado, j);
+                    tabela.get(i).set(j, Math.max(tabela.get(i - 1).get(j), valorCalculado));
+                    addOperacaoMatematica();
+                } else {
+                    tabela.get(i).set(j, tabela.get(i - 1).get(j));
+                }
+            }
+        }
     }
 
     /**
      * Cria as tabelas para cada caminhão, inicializando-as com zeros e configurando
      * a linha de cabeçalho com base nas rotas de entrada e na média desejada.
      *
-     * @param rotas        Array das distâncias das rotas.
-     * @param numCaminhoes Número de caminhões.
-     * @param media        Média desejada de quilometragem por caminhão.
+     * @param listaRotasPendentes2 Array das distâncias das rotas.
+     * @param numCaminhoes         Número de caminhões.
+     * @param media                Média desejada de quilometragem por caminhão.
      * @return Lista de tabelas criadas para cada caminhão.
      */
-    public List<List<List<Integer>>> criarTabelas(int[] rotas, int numCaminhoes, int media) {
+    public List<List<List<Integer>>> criarTabelas(List<Integer> listaRotasPendentes2, int numCaminhoes, int media) {
         List<List<List<Integer>>> tabelas = new ArrayList<>();
 
         for (int caminhao = 0; caminhao < numCaminhoes; caminhao++) {
             List<List<Integer>> tabela = new ArrayList<>();
 
             List<Integer> cabecalho = new ArrayList<>();
-            cabecalho.add(0); // Coluna inicial com 0
-            for (int i = rotas[0]; i <= media; i++) {
+            for (int i = listaRotasPendentes2.get(0); i <= media; i++) {
+                cabecalho.add(0);
+            }
+            for (int i = listaRotasPendentes2.get(0); i <= media; i++) {
                 cabecalho.add(i);
             }
             tabela.add(cabecalho);
-
-            for (int rota : rotas) {
+            for (int rota : listaRotasPendentes2) {
                 List<Integer> linha = new ArrayList<>();
                 linha.add(rota);
-                for (int i = 1; i < cabecalho.size(); i++) {
+                for (int i = 0; i < cabecalho.size(); i++) {
                     linha.add(0);
                 }
                 tabela.add(linha);
