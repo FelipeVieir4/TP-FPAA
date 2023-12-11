@@ -1,13 +1,12 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Classe que representa uma implementação de backtracking para geração de rotas
  * otimizadas para caminhões.
- * 
+ *
  */
 public class Backtracking implements Comparable<Backtracking> {
 
@@ -36,7 +35,7 @@ public class Backtracking implements Comparable<Backtracking> {
 
     /**
      * Método que calcula a otimização das rotas por caminhão.
-     * 
+     *
      * @param rotas        array de valores inteiros que representam a distância.
      * @param numCaminhoes quantidade de caminhões disponíveis
      * @return uma lista de inteiros, cada indice da lista é um caminhão e o array
@@ -363,7 +362,7 @@ public class Backtracking implements Comparable<Backtracking> {
     /**
      * Implementação do método compareTo para ordenação de objetos Backtracking.
      * Comparação por tempo de execução.
-     * 
+     *
      * @param other Objeto a ser comparado.
      * @return Valor negativo se menor, zero se igual, valor positivo se maior.
      */

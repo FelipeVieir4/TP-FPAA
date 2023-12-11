@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,77 +8,38 @@ public class ProgramacaoDinamica {
     private int numCaminhoes;
     private float tempoExecucao;
     private int comparacoes;
-    private List<Integer> solucao;
-    private int operacoesMatBasica;
+    private List<List<Integer>> solucao;
+    private int operacoesMatematica;
     private int totalChamadasRecursivas;
+    private LocalDateTime horaInicioExecucao;
+    private int desvioPadraoDasRotas;
+    private int quilometragemMediaDesejadaPorCaminhao;
+
+    private void setHoraInicioExecucao() {
+        horaInicioExecucao = LocalDateTime.now();
+    }
+
+    private void addOperacaoMatematica() {
+        operacoesMatematica++;
+    }
+
+    private void addComparacao() {
+        comparacoes++;
+    }
 
     public ProgramacaoDinamica() {
+        this.numCaminhoes = 0;
         this.tempoExecucao = 0.0f;
         this.comparacoes = 0;
-        this.solucao = new ArrayList<>(); // Inicialize com uma lista vazia
-        this.operacoesMatBasica = 0;
+        this.solucao = new ArrayList<List<Integer>>();
+        this.operacoesMatematica = 0;
         this.totalChamadasRecursivas = 0;
-    }
-
-    public ProgramacaoDinamica(float tempoExecucao, int comparacoes, int operacoesMatBasica,
-            int totalChamadasRecursivas) {
-        this.tempoExecucao = tempoExecucao;
-        this.comparacoes = comparacoes;
-        this.solucao = new ArrayList<>(); // ou inicialize com algum valor, se necessário
-        this.operacoesMatBasica = operacoesMatBasica;
-        this.totalChamadasRecursivas = totalChamadasRecursivas;
-    }
-
-    public int[] getRotas() {
-        return rotas;
-    }
-
-    public void setRotas(int[] rotas) {
-        this.rotas = rotas;
-    }
-
-    // Getters e Setters
-    public float getTempoExecucao() {
-        return tempoExecucao;
-    }
-
-    public void setTempoExecucao(float tempoExecucao) {
-        this.tempoExecucao = tempoExecucao;
-    }
-
-    public int getComparacoes() {
-        return comparacoes;
-    }
-
-    public void setComparacoes(int comparacoes) {
-        this.comparacoes = comparacoes;
-    }
-
-    public List<Integer> getSolucao() {
-        return solucao;
-    }
-
-    public void setSolucao(List<Integer> solucao) {
-        this.solucao = solucao;
-    }
-
-    public int getOperacoesMatBasica() {
-        return operacoesMatBasica;
-    }
-
-    public void setOperacoesMatBasica(int operacoesMatBasica) {
-        this.operacoesMatBasica = operacoesMatBasica;
-    }
-
-    public int getTotalChamadasRecursivas() {
-        return totalChamadasRecursivas;
-    }
-
-    public void setTotalChamadasRecursivas(int totalChamadasRecursivas) {
-        this.totalChamadasRecursivas = totalChamadasRecursivas;
+        this.desvioPadraoDasRotas = 0;
+        this.quilometragemMediaDesejadaPorCaminhao = 0;
     }
 
     public void runProgDinamica(int[] rotas, int numCaminhoes) {
+        setHoraInicioExecucao();
         Arrays.sort(rotas);
         this.rotas = rotas;
         this.numCaminhoes = numCaminhoes;
@@ -86,23 +48,39 @@ public class ProgramacaoDinamica {
         int[][] tabela = criarTabelaComCabecalho(mediaCorrigidaPraCima);
         imprimirTabela(tabela);
         System.out.println("");
-        tabela = resolve(tabela, mediaCorrigidaPraCima);
+        tabela = resolve(tabela);
         imprimirTabela(tabela);
     }
 
-    private int[][] resolve(int[][] tabela, int limiteColuna) {
-        for (int i = 0; i < rotas.length + 2; i++) {
-            for (int j = 0; j < limiteColuna + 2; j++) {
-                int maxVal = (j - 1 >= 0) ? tabela[i - 1][j] : 0;
-                int addVal = 0;
-                if (i < tabela.length && j >= tabela[i][0] && (j - tabela[i][0]) >= 0) {
-                    addVal = tabela[i - 1][j - tabela[i][0]] + tabela[i][0];
-                }
+    private int[][] resolve(int[][] tabela) {
+        for (int i = 2; i < tabela.length; i++) {
+            for (int j = 1; j < tabela[0].length; j++) {
+                int valorMaximoAtual = tabela[i - 1][j];
+                int valorRotaAtual = tabela[i][0];
+                if (j >= valorRotaAtual) {
+                    addComparacao();
+                    int indiceRestante = j - valorRotaAtual;
+                    addOperacaoMatematica();
 
-                tabela[i][j] = encontraMax(maxVal, addVal);
+                    int novoValorInserido = tabela[i - 1][indiceRestante] + valorRotaAtual;
+                    addOperacaoMatematica();
+
+                    tabela[i][j] = encontraMax(valorMaximoAtual, novoValorInserido);
+                    addComparacao();
+                } else {
+                    tabela[i][j] = valorMaximoAtual;
+                }
             }
         }
         return tabela;
+    }
+
+    private int encontraMax(int atual, int novo) {
+        addComparacao(); // Contabiliza a comparação
+        if (atual < novo) {
+            return novo;
+        }
+        return atual;
     }
 
     private void imprimirTabela(int[][] tabela) {
@@ -126,6 +104,7 @@ public class ProgramacaoDinamica {
             for (int j = 0; j < 1; j++) {
                 tabela[i][j] = rotas[indiceInicialRota];
                 indiceInicialRota++;
+                addOperacaoMatematica();
             }
         }
 
@@ -134,25 +113,21 @@ public class ProgramacaoDinamica {
             for (int j = 1; j < valorFinalColuna; j++) {
                 tabela[i][j] = valorInicialColuna;
                 valorInicialColuna++;
+                addOperacaoMatematica();
             }
         }
 
         return tabela;
     }
 
-    private int encontraMax(int atual, int novo) {
-        if (atual <= novo) {
-            return novo;
-        }
-        return atual;
-    }
-
     private double getMediaRotaDeCadaCaminhao() {
         int soma = 0;
         for (int i = 0; i < rotas.length; i++) {
             soma += rotas[i];
+            addOperacaoMatematica();
         }
         double media = soma / numCaminhoes;
+        addOperacaoMatematica();
         return media;
     }
 }
