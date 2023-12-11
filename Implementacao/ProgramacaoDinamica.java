@@ -3,6 +3,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Esta classe implementa uma solução de programação dinâmica para a
+ * distribuição de rotas por caminhões.
+ */
 public class ProgramacaoDinamica {
     private int[] rotas;
     private int numCaminhoes;
@@ -39,6 +43,16 @@ public class ProgramacaoDinamica {
         this.quilometragemMediaDesejadaPorCaminhao = 0;
     }
 
+    /**
+     * Inicia o processo de programação dinâmica para distribuir rotas entre os
+     * caminhões.
+     * Ordena as rotas, calcula a média desejada de quilometragem por caminhão, cria
+     * e preenche as tabelas,
+     * reconstrói a solução e imprime a solução final.
+     *
+     * @param rotas        Array das distâncias para cada rota.
+     * @param numCaminhoes O número de caminhões disponíveis para as rotas.
+     */
     public void runProgDinamica(int[] rotas, int numCaminhoes) {
         setHoraInicioExecucao();
         Arrays.sort(rotas);
@@ -60,6 +74,15 @@ public class ProgramacaoDinamica {
 
     }
 
+    /**
+     * Cria as tabelas para cada caminhão, inicializando-as com zeros e configurando
+     * a linha de cabeçalho com base nas rotas de entrada e na média desejada.
+     *
+     * @param rotas        Array das distâncias das rotas.
+     * @param numCaminhoes Número de caminhões.
+     * @param media        Média desejada de quilometragem por caminhão.
+     * @return Lista de tabelas criadas para cada caminhão.
+     */
     public List<List<List<Integer>>> criarTabelas(int[] rotas, int numCaminhoes, int media) {
         List<List<List<Integer>>> tabelas = new ArrayList<>();
 
@@ -88,6 +111,12 @@ public class ProgramacaoDinamica {
         return tabelas;
     }
 
+    /**
+     * Imprime as tabelas para cada caminhão, mostrando o estado atual de cada
+     * tabela.
+     *
+     * @param tabelas Lista de tabelas para imprimir.
+     */
     public void imprimirTabelas(List<List<List<Integer>>> tabelas) {
         for (int i = 0; i < tabelas.size(); i++) {
             System.out.println("Tabela para Caminhão " + (i + 1) + ":");
@@ -101,12 +130,21 @@ public class ProgramacaoDinamica {
         }
     }
 
+    /**
+     * Imprime a solução final, mostrando quais rotas são atribuídas a cada
+     * caminhão.
+     */
     private void imprimirSolucao() {
         for (int i = 0; i < solucao.size(); i++) {
             System.out.println("Rotas para caminhão " + (i + 1) + ": " + solucao.get(i));
         }
     }
 
+    /**
+     * Calcula a soma total de todas as rotas.
+     *
+     * @return A soma das distâncias de todas as rotas.
+     */
     private double calcularSomaRotas() {
         double somaRotas = 0;
         for (int rota : rotas) {
@@ -116,6 +154,14 @@ public class ProgramacaoDinamica {
         return somaRotas;
     }
 
+    /**
+     * Preenche as tabelas de programação dinâmica para cada caminhão usando as
+     * rotas e a média desejada.
+     *
+     * @param tabelas Tabelas para preencher.
+     * @param rotas   Array das distâncias das rotas.
+     * @param media   Média desejada de quilometragem por caminhão.
+     */
     private void preencherTabelas(List<List<List<Integer>>> tabelas, int[] rotas, int media) {
         for (List<List<Integer>> tabela : tabelas) {
             for (int i = 1; i < tabela.size(); i++) {
@@ -123,6 +169,7 @@ public class ProgramacaoDinamica {
                     int rotaAtual = tabela.get(i).get(0);
                     if (rotaAtual <= j) {
                         addComparacao();
+
                         int valorCalculado = tabela.get(i - 1).get(j - rotaAtual) + rotaAtual;
                         valorCalculado = Math.min(valorCalculado, j);
                         tabela.get(i).set(j, Math.max(tabela.get(i - 1).get(j), valorCalculado));
@@ -135,6 +182,13 @@ public class ProgramacaoDinamica {
         }
     }
 
+    /**
+     * Reconstrói a solução a partir das tabelas de programação dinâmica,
+     * determinando quais rotas
+     * atribuir a cada caminhão.
+     *
+     * @param tabelas Tabelas de onde a solução será reconstruída.
+     */
     private void reconstruirSolucao(List<List<List<Integer>>> tabelas) {
         List<Integer> rotasRestantes = new ArrayList<>();
         for (int rota : rotas) {
@@ -162,6 +216,9 @@ public class ProgramacaoDinamica {
         }
     }
 
+    /**
+     * Calcula a média de quilometragem desejada por caminhão.
+     */
     private void calculaKmMediaDesejadaPorCaminhao() {
         double somaRotas = calcularSomaRotas();
         addOperacaoMatematica();
@@ -171,6 +228,13 @@ public class ProgramacaoDinamica {
         setQuilometragemMediaDesejadaPorCaminhao(mediaParaCima);
     }
 
+    /**
+     * Define a média de quilometragem desejada por caminhão com base na média
+     * calculada.
+     *
+     * @param quilometragemMediaPorCaminhaoDesejado A média de quilometragem por
+     *                                              caminhão desejada.
+     */
     public void setQuilometragemMediaDesejadaPorCaminhao(int quilometragemMediaPorCaminhaoDesejado) {
         this.quilometragemMediaDesejadaPorCaminhao = quilometragemMediaPorCaminhaoDesejado;
     }
