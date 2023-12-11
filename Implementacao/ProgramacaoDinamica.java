@@ -50,6 +50,12 @@ public class ProgramacaoDinamica {
 
         imprimirTabelas(tabelas);
 
+        preencherTabelas(tabelas, rotas, quilometragemMediaDesejadaPorCaminhao);
+
+        imprimirTabelas(tabelas);
+
+        reconstruirSolucao(tabelas);
+
         imprimirSolucao();
 
     }
@@ -108,6 +114,52 @@ public class ProgramacaoDinamica {
             somaRotas += rota;
         }
         return somaRotas;
+    }
+
+    private void preencherTabelas(List<List<List<Integer>>> tabelas, int[] rotas, int media) {
+        for (List<List<Integer>> tabela : tabelas) {
+            for (int i = 1; i < tabela.size(); i++) {
+                for (int j = 1; j < tabela.get(0).size(); j++) {
+                    int rotaAtual = tabela.get(i).get(0);
+                    if (rotaAtual <= j) {
+                        addComparacao();
+                        int valorCalculado = tabela.get(i - 1).get(j - rotaAtual) + rotaAtual;
+                        valorCalculado = Math.min(valorCalculado, j);
+                        tabela.get(i).set(j, Math.max(tabela.get(i - 1).get(j), valorCalculado));
+                        addOperacaoMatematica();
+                    } else {
+                        tabela.get(i).set(j, tabela.get(i - 1).get(j));
+                    }
+                }
+            }
+        }
+    }
+
+    private void reconstruirSolucao(List<List<List<Integer>>> tabelas) {
+        List<Integer> rotasRestantes = new ArrayList<>();
+        for (int rota : rotas) {
+            rotasRestantes.add(rota);
+        }
+        solucao.clear();
+
+        for (List<List<Integer>> tabela : tabelas) {
+            List<Integer> rotasCaminhao = new ArrayList<>();
+            int j = quilometragemMediaDesejadaPorCaminhao;
+
+            for (int i = tabela.size() - 1; i > 0; i--) {
+                if (j >= 0 && j < tabela.get(0).size() && tabela.get(i).get(j) != tabela.get(i - 1).get(j)) {
+                    addComparacao();
+                    int rota = tabela.get(i).get(0);
+                    rotasCaminhao.add(rota);
+                    addOperacaoMatematica();
+                    rotasRestantes.remove((Integer) rota);
+                    j -= rota;
+                    addOperacaoMatematica();
+                }
+            }
+
+            solucao.add(rotasCaminhao);
+        }
     }
 
     private void calculaKmMediaDesejadaPorCaminhao() {

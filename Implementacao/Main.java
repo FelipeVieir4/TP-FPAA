@@ -24,7 +24,7 @@ public class Main {
             Backtracking backtracking = new Backtracking();
             try {
                 backtracking.runBackTracking(is, numCaminhoes);
-                backtracking.toString();
+                System.out.println(backtracking.toString());
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
