@@ -1,6 +1,7 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -62,14 +63,14 @@ public class Backtracking implements Comparable<Backtracking> {
         int somaRotasSolucao = 0;
         int indiceCaminhao = 0;
         this.solucao = backTracking(rotasCandidatas, solucaoCandidata, somaRotasSolucao, indiceCaminhao);
-        imprimir(solucao);
+        // imprimir(solucao);
         return solucao;
     }
 
     private void imprimir(List<List<Integer>> solucao) {
         for (int i = 0; i < solucao.size(); i++) {
             List<Integer> lista = solucao.get(i);
-            System.out.println("Caminhão 0" + i + ":");
+            System.out.println("Caminhão 0" + (i+1) + ": " + somarLista(lista) + " km totais");
             for (Integer rota : lista) {
                 System.out.print(" " + rota + " ");
             }
@@ -107,15 +108,9 @@ public class Backtracking implements Comparable<Backtracking> {
 
             if (!ehSolucao(novaSomaRotas)) {
 
-                for (int i = 0; i < rotas.length; i++) {
-                    List<List<Integer>> res = backTracking(novasRotasCandidatas, solucoesCandidatasAtualizadas,
-                            novaSomaRotas,
-                            indiceCaminhao);
-
-                    if (res != null) {
-                        return res;
-                    }
-                }
+                return backTracking(novasRotasCandidatas, solucoesCandidatasAtualizadas,
+                        novaSomaRotas,
+                        indiceCaminhao);
 
             } else {
 
@@ -124,7 +119,8 @@ public class Backtracking implements Comparable<Backtracking> {
             }
 
         }
-        return null; // Não foi possível encontrar uma solução a partir deste ponto
+
+        return solucoesCandidatas; // Não foi possível encontrar uma solução a partir deste ponto
 
     }
 
@@ -205,6 +201,15 @@ public class Backtracking implements Comparable<Backtracking> {
             somaRotas += rota;
         }
         return somaRotas;
+    }
+
+    private int somarLista(List<Integer> lista) {
+        int soma = 0;
+        for (Integer integer : lista) {
+            soma += integer;
+        }
+
+        return soma;
     }
 
     private int[] ordenaDesc(int[] array) {
