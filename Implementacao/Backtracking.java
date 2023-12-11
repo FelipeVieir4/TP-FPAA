@@ -40,7 +40,11 @@ public class Backtracking implements Comparable<Backtracking> {
     public List<List<Integer>> runBackTracking(int[] rotas, int numCaminhoes) throws InterruptedException {
         this.listaInicialRotas = rotas;
         this.numCaminhoes = numCaminhoes;
-        this.solucaoFinal = new ArrayList<List<Integer>>(numCaminhoes);
+        this.solucaoFinal = new ArrayList<>(numCaminhoes);
+        for (int i = 0; i < numCaminhoes; i++) {
+            List<Integer> lista = new ArrayList<>();
+            this.solucaoFinal.add(lista);
+        }
         calculaKmMediaDesejadaPorCaminhao();
         setHoraInicioExecucao();
         List<Integer> rotasCandidatas = new ArrayList<>();
@@ -48,24 +52,15 @@ public class Backtracking implements Comparable<Backtracking> {
             rotasCandidatas.add(rota);
         }
         this.listaRotasPendentes = rotasCandidatas;
-        System.out.println("média desejada: " + quilometragemMediaDesejadaPorCaminhao);
-        System.out.println(
-                "Rotas restantes: " + listaRotasPendentes + " total: " + somarItensLista(listaRotasPendentes));
         for (int i = 0; i < numCaminhoes; i++) {
             backTracking(listaRotasPendentes, 0, 0, new ArrayList<>());
-            System.out.println("Caminhão " + (i + 1) + " --> " + melhorSubconjunto + " distância total: " + melhorSoma);
+            atualizaSolucaoFinal(i);
             atualizaListaRotasPendentes(melhorSubconjunto);
-            melhorSubconjunto = new ArrayList<>();
-            melhorSoma = Integer.MAX_VALUE;
-            System.out.println(
-                    "Rotas restantes: " + listaRotasPendentes + " total: " + somarItensLista(listaRotasPendentes));
         }
-
-        // imprimir(solucao);
         return solucaoFinal;
     }
 
-    // Função de backtracking para explorar todas as possíveis combinações
+
     private void backTracking(List<Integer> numeros, int indice, int somaAtual, List<Integer> subconjuntoAtual)
             throws InterruptedException {
 
@@ -90,11 +85,18 @@ public class Backtracking implements Comparable<Backtracking> {
         }
     }
 
+    
+
+    private void atualizaSolucaoFinal(int caminhaoIndex) {
+        solucaoFinal.set(caminhaoIndex, melhorSubconjunto);
+    }
+
     private void atualizaListaRotasPendentes(List<Integer> rotaPronta) {
         for (Integer integer : rotaPronta) {
             listaRotasPendentes.remove(integer);
         }
-        ;
+        melhorSubconjunto = new ArrayList<>();
+        melhorSoma = Integer.MAX_VALUE;
     }
 
     private void calculaKmMediaDesejadaPorCaminhao() {
@@ -169,17 +171,7 @@ public class Backtracking implements Comparable<Backtracking> {
             result.append("Sem solução...");
         } else {
             for (int i = 0; i < solucaoFinal.size(); i++) {
-                List<Integer> caminhao = solucaoFinal.get(i);
-                int total = 0;
-
-                result.append("Caminhão 0").append(i).append(": ");
-
-                for (Integer distancia : caminhao) {
-                    result.append(distancia).append(" ");
-                    total += distancia;
-                }
-
-                result.append(" = ").append(total).append(" unidades de distância");
+                result.append("Caminhão " + (i + 1) + solucaoFinal.get(i) + "  total km da rota: "+somarItensLista(solucaoFinal.get(i)));
                 result.append(System.lineSeparator());
             }
         }
