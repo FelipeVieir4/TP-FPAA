@@ -101,9 +101,7 @@ public class Backtracking implements Comparable<Backtracking> {
 
     private void calculaKmMediaDesejadaPorCaminhao() {
         double somaRotas = calcularSomaRotas();
-        addOperacaoMatematica();
         double media = somaRotas / numCaminhoes;
-        addOperacaoMatematica();
         int mediaParaCima = (int) Math.ceil(media);
         setQuilometragemMediaDesejadaPorCaminhao(mediaParaCima);
     }
@@ -119,7 +117,6 @@ public class Backtracking implements Comparable<Backtracking> {
     private double calcularSomaRotas() {
         double somaRotas = 0;
         for (int rota : listaInicialRotas) {
-            addOperacaoMatematica();
             somaRotas += rota;
         }
         return somaRotas;
