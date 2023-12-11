@@ -19,9 +19,6 @@ public class ProgramacaoDinamica {
         horaInicioExecucao = LocalDateTime.now();
     }
 
-    /**
-     * Adiciona uma operação matemática básica.
-     */
     private void addOperacaoMatematica() {
         operacoesMatematica++;
     }
