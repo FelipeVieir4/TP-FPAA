@@ -97,19 +97,28 @@ public class ProgramacaoDinamica {
 
     }
 
+    /**
+     * Preenche a tabela de rotas com base nas rotas pendentes e na quilometragem
+     * disponível.
+     * Cada célula é preenchida com o valor máximo de rota que pode ser
+     * alcançado
+     * até aquela rota, sem exceder a quilometragem disponível para o caminhão.
+     *
+     * @param tabela A tabela de rotas a ser preenchida.
+     */
     private void gerarRota(List<List<Integer>> tabela) {
         for (int i = 2; i < tabela.size(); i++) {
-            for (int j = 2; j < tabela.get(0).size(); j++) {
-                int rotaAtual = tabela.get(i).get(0);
-                if (rotaAtual <= j) {
-                    addComparacao();
+            for (int j = 1; j < tabela.get(0).size(); j++) {
+                int rotaAtual = tabela.get(i).get(0); // A rota atual da linha
+                int maxAnterior = tabela.get(i - 1).get(j); // O valor máximo da linha anterior na mesma coluna
+                int maxComRotaAtual = (j - rotaAtual >= 0) ? tabela.get(i - 1).get(j - rotaAtual) + rotaAtual : 0;
 
-                    int valorCalculado = tabela.get(i - 1).get(j - rotaAtual) + rotaAtual;
-                    valorCalculado = Math.min(valorCalculado, j);
-                    tabela.get(i).set(j, Math.max(tabela.get(i - 1).get(j), valorCalculado));
-                    addOperacaoMatematica();
-                } else {
-                    tabela.get(i).set(j, tabela.get(i - 1).get(j));
+                if (maxComRotaAtual > j) { // Se o valor máximo com a rota atual exceder a quilometragem disponível, não
+                                           // é usado
+                    tabela.get(i).set(j, maxAnterior);
+                } else { // Caso contrário, usa-se o maior valor entre o máximo anterior e o máximo com a
+                         // rota atual
+                    tabela.get(i).set(j, Math.max(maxAnterior, maxComRotaAtual));
                 }
             }
         }
@@ -130,28 +139,25 @@ public class ProgramacaoDinamica {
         for (int caminhao = 0; caminhao < numCaminhoes; caminhao++) {
             List<List<Integer>> tabela = new ArrayList<>();
 
-            // Criar cabeçalho da tabela com dois zeros no início
             List<Integer> cabecalho = new ArrayList<>();
-            cabecalho.add(0); // Adiciona o primeiro zero
-            cabecalho.add(0); // Adiciona o segundo zero
+            cabecalho.add(0);
+            cabecalho.add(0);
             for (int i = listaRotasPendentes.get(0); i <= media; i++) {
                 cabecalho.add(i);
             }
             tabela.add(cabecalho);
 
-            // Adicionar uma linha inicial com zeros
             List<Integer> linhaInicial = new ArrayList<>();
             for (int i = 0; i < cabecalho.size(); i++) {
                 linhaInicial.add(0);
             }
             tabela.add(linhaInicial);
 
-            // Criar linhas da tabela com a rota como primeiro elemento
             for (int rota : listaRotasPendentes) {
                 List<Integer> linha = new ArrayList<>();
-                linha.add(rota); // Primeira coluna de cada linha é a rota
+                linha.add(rota);
                 for (int i = 1; i < cabecalho.size(); i++) {
-                    linha.add(0); // Adicionar zeros para o resto da linha
+                    linha.add(0);
                 }
                 tabela.add(linha);
             }
@@ -213,25 +219,26 @@ public class ProgramacaoDinamica {
      * @param rotas   Array das distâncias das rotas.
      * @param media   Média desejada de quilometragem por caminhão.
      */
-    private void preencherTabelas(List<List<List<Integer>>> tabelas, int[] rotas, int media) {
-        for (List<List<Integer>> tabela : tabelas) {
-            for (int i = 2; i < tabela.size(); i++) {
-                for (int j = 2; j < tabela.get(0).size(); j++) {
-                    int rotaAtual = tabela.get(i).get(0);
-                    if (rotaAtual <= j) {
-                        addComparacao();
+    // private void preencherTabelas(List<List<List<Integer>>> tabelas, int[] rotas,
+    // int media) {
+    // for (List<List<Integer>> tabela : tabelas) {
+    // for (int i = 2; i < tabela.size(); i++) {
+    // for (int j = 2; j < tabela.get(0).size(); j++) {
+    // int rotaAtual = tabela.get(i).get(0);
+    // if (rotaAtual <= j) {
+    // addComparacao();
 
-                        int valorCalculado = tabela.get(i - 1).get(j - rotaAtual) + rotaAtual;
-                        valorCalculado = Math.min(valorCalculado, j);
-                        tabela.get(i).set(j, Math.max(tabela.get(i - 1).get(j), valorCalculado));
-                        addOperacaoMatematica();
-                    } else {
-                        tabela.get(i).set(j, tabela.get(i - 1).get(j));
-                    }
-                }
-            }
-        }
-    }
+    // int valorCalculado = tabela.get(i - 1).get(j - rotaAtual) + rotaAtual;
+    // valorCalculado = Math.min(valorCalculado, j);
+    // tabela.get(i).set(j, Math.max(tabela.get(i - 1).get(j), valorCalculado));
+    // addOperacaoMatematica();
+    // } else {
+    // tabela.get(i).set(j, tabela.get(i - 1).get(j));
+    // }
+    // }
+    // }
+    // }
+    // }
 
     /**
      * Reconstrói a solução a partir das tabelas de programação dinâmica,
@@ -240,32 +247,33 @@ public class ProgramacaoDinamica {
      *
      * @param tabelas Tabelas de onde a solução será reconstruída.
      */
-    private void reconstruirSolucao(List<List<List<Integer>>> tabelas) {
-        List<Integer> rotasRestantes = new ArrayList<>();
-        for (int rota : rotas) {
-            rotasRestantes.add(rota);
-        }
-        solucao.clear();
+    // private void reconstruirSolucao(List<List<List<Integer>>> tabelas) {
+    // List<Integer> rotasRestantes = new ArrayList<>();
+    // for (int rota : rotas) {
+    // rotasRestantes.add(rota);
+    // }
+    // solucao.clear();
 
-        for (List<List<Integer>> tabela : tabelas) {
-            List<Integer> rotasCaminhao = new ArrayList<>();
-            int j = quilometragemMediaDesejadaPorCaminhao;
+    // for (List<List<Integer>> tabela : tabelas) {
+    // List<Integer> rotasCaminhao = new ArrayList<>();
+    // int j = quilometragemMediaDesejadaPorCaminhao;
 
-            for (int i = tabela.size() - 1; i > 0; i--) {
-                if (j >= 0 && j < tabela.get(0).size() && tabela.get(i).get(j) != tabela.get(i - 1).get(j)) {
-                    addComparacao();
-                    int rota = tabela.get(i).get(0);
-                    rotasCaminhao.add(rota);
-                    addOperacaoMatematica();
-                    rotasRestantes.remove((Integer) rota);
-                    j -= rota;
-                    addOperacaoMatematica();
-                }
-            }
+    // for (int i = tabela.size() - 1; i > 0; i--) {
+    // if (j >= 0 && j < tabela.get(0).size() && tabela.get(i).get(j) !=
+    // tabela.get(i - 1).get(j)) {
+    // addComparacao();
+    // int rota = tabela.get(i).get(0);
+    // rotasCaminhao.add(rota);
+    // addOperacaoMatematica();
+    // rotasRestantes.remove((Integer) rota);
+    // j -= rota;
+    // addOperacaoMatematica();
+    // }
+    // }
 
-            solucao.add(rotasCaminhao);
-        }
-    }
+    // solucao.add(rotasCaminhao);
+    // }
+    // }
 
     /**
      * Calcula a média de quilometragem desejada por caminhão.
