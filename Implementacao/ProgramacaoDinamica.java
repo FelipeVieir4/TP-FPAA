@@ -131,9 +131,7 @@ public class ProgramacaoDinamica {
             List<List<Integer>> tabela = new ArrayList<>();
 
             List<Integer> cabecalho = new ArrayList<>();
-            for (int i = listaRotasPendentes2.get(0); i <= media; i++) {
-                cabecalho.add(0);
-            }
+            cabecalho.add(0);
             for (int i = listaRotasPendentes2.get(0); i <= media; i++) {
                 cabecalho.add(i);
             }
