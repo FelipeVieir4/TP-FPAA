@@ -75,7 +75,7 @@ public class ProgramacaoDinamica {
 
         // preencherTabelas(tabelas, rotas, quilometragemMediaDesejadaPorCaminhao);
 
-        // imprimirTabelas(tabelas);
+        imprimirTabelas(tabelas);
 
         reconstroiCaminhoCadaCaminhao(tabelas.get(0));
 
@@ -98,8 +98,8 @@ public class ProgramacaoDinamica {
     }
 
     private void gerarRota(List<List<Integer>> tabela) {
-        for (int i = 1; i < tabela.size(); i++) {
-            for (int j = 1; j < tabela.get(0).size(); j++) {
+        for (int i = 2; i < tabela.size(); i++) {
+            for (int j = 2; j < tabela.get(0).size(); j++) {
                 int rotaAtual = tabela.get(i).get(0);
                 if (rotaAtual <= j) {
                     addComparacao();
@@ -119,28 +119,39 @@ public class ProgramacaoDinamica {
      * Cria as tabelas para cada caminhão, inicializando-as com zeros e configurando
      * a linha de cabeçalho com base nas rotas de entrada e na média desejada.
      *
-     * @param listaRotasPendentes2 Array das distâncias das rotas.
-     * @param numCaminhoes         Número de caminhões.
-     * @param media                Média desejada de quilometragem por caminhão.
+     * @param listaRotasPendentes Array das distâncias das rotas.
+     * @param numCaminhoes        Número de caminhões.
+     * @param media               Média desejada de quilometragem por caminhão.
      * @return Lista de tabelas criadas para cada caminhão.
      */
-    public List<List<List<Integer>>> criarTabelas(List<Integer> listaRotasPendentes2, int numCaminhoes, int media) {
+    public List<List<List<Integer>>> criarTabelas(List<Integer> listaRotasPendentes, int numCaminhoes, int media) {
         List<List<List<Integer>>> tabelas = new ArrayList<>();
 
         for (int caminhao = 0; caminhao < numCaminhoes; caminhao++) {
             List<List<Integer>> tabela = new ArrayList<>();
 
+            // Criar cabeçalho da tabela com dois zeros no início
             List<Integer> cabecalho = new ArrayList<>();
-            cabecalho.add(0);
-            for (int i = listaRotasPendentes2.get(0); i <= media; i++) {
+            cabecalho.add(0); // Adiciona o primeiro zero
+            cabecalho.add(0); // Adiciona o segundo zero
+            for (int i = listaRotasPendentes.get(0); i <= media; i++) {
                 cabecalho.add(i);
             }
             tabela.add(cabecalho);
-            for (int rota : listaRotasPendentes2) {
+
+            // Adicionar uma linha inicial com zeros
+            List<Integer> linhaInicial = new ArrayList<>();
+            for (int i = 0; i < cabecalho.size(); i++) {
+                linhaInicial.add(0);
+            }
+            tabela.add(linhaInicial);
+
+            // Criar linhas da tabela com a rota como primeiro elemento
+            for (int rota : listaRotasPendentes) {
                 List<Integer> linha = new ArrayList<>();
-                linha.add(rota);
-                for (int i = 0; i < cabecalho.size(); i++) {
-                    linha.add(0);
+                linha.add(rota); // Primeira coluna de cada linha é a rota
+                for (int i = 1; i < cabecalho.size(); i++) {
+                    linha.add(0); // Adicionar zeros para o resto da linha
                 }
                 tabela.add(linha);
             }
@@ -158,7 +169,7 @@ public class ProgramacaoDinamica {
      * @param tabelas Lista de tabelas para imprimir.
      */
     public void imprimirTabelas(List<List<List<Integer>>> tabelas) {
-        for (int i = 0; i < tabelas.size(); i++) {
+        for (int i = 0; i < 1; i++) {
             System.out.println("Tabela para Caminhão " + (i + 1) + ":");
             for (List<Integer> linha : tabelas.get(i)) {
                 for (int valor : linha) {
@@ -204,8 +215,8 @@ public class ProgramacaoDinamica {
      */
     private void preencherTabelas(List<List<List<Integer>>> tabelas, int[] rotas, int media) {
         for (List<List<Integer>> tabela : tabelas) {
-            for (int i = 1; i < tabela.size(); i++) {
-                for (int j = 1; j < tabela.get(0).size(); j++) {
+            for (int i = 2; i < tabela.size(); i++) {
+                for (int j = 2; j < tabela.get(0).size(); j++) {
                     int rotaAtual = tabela.get(i).get(0);
                     if (rotaAtual <= j) {
                         addComparacao();

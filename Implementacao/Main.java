@@ -78,19 +78,21 @@ public class Main {
         // new int[] { 32, 51, 32, 43, 42, 30, 42, 51, 43, 51, 29, 25, 27, 32,
         // 29, 55, 43, 29, 32, 44, 55, 29, 53, 30, 24, 27 });
 
-        List<int[]> listaRotas = Arrays.asList(new int[] { 5, 6, 7, 8, 9 });
+        List<int[]> listaRotas = Arrays.asList(new int[] { 1, 2, 3, 4 });
 
         // new int[] { 40, 36, 38, 29 },
 
         // 5, 6, 7, 8, 9
 
+        // 1, 2, 3, 4
+
         // ordenarRotas(listaRotas);
 
-        resolverBacktracking(listaRotas, numCaminhoes);
+        // resolverBacktracking(listaRotas, numCaminhoes);
 
         // resolverDivisaoConquista(listaRotas, numCaminhoes);
 
-        // resolverProgramacaoDinamica(listaRotas, numCaminhoes);
+        resolverProgramacaoDinamica(listaRotas, numCaminhoes);
 
         teclado.close();
     }
