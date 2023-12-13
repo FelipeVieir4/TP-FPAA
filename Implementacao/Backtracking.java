@@ -23,6 +23,7 @@ public class Backtracking implements Comparable<Backtracking> {
     private LocalDateTime horaInicioExecucao;
 
     // VARIÁVEIS GLOBAIS
+    private double TOLERANCIA = 0.1;
     private int melhorSoma = Integer.MAX_VALUE;
     private List<Integer> melhorSubconjunto = new ArrayList<>();
 
@@ -104,6 +105,7 @@ public class Backtracking implements Comparable<Backtracking> {
     private void calculaKmMediaDesejadaPorCaminhao() {
         double somaRotas = calcularSomaRotas();
         double media = somaRotas / numCaminhoes;
+        // media = media + (media*TOLERANCIA);
         int mediaParaCima = (int) Math.ceil(media);
         setQuilometragemMediaDesejadaPorCaminhao(mediaParaCima);
     }
