@@ -27,6 +27,7 @@ public class ProgramacaoDinamica {
     }
 
     public List<List<Integer>> runProgDinamica(int[] rotas, int numCaminhoes) {
+        Arrays.sort(rotas);
         this.rotas = rotas;
         this.rotasOriginais = rotas;
         this.numCaminhoes = numCaminhoes;
@@ -164,7 +165,7 @@ public class ProgramacaoDinamica {
     private void calculaKmMediaDesejadaPorCaminhao() {
         double somaRotas = calcularSomaRotas();
         double media = somaRotas / numCaminhoes;
-        // media = media + (media * TOLERANCIA);
+        media = media + (media * TOLERANCIA);
         int mediaParaCima = (int) Math.ceil(media);
         setQuilometragemMediaDesejadaPorCaminhao(mediaParaCima);
     }

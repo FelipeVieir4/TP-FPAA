@@ -1,22 +1,7 @@
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
-    static Scanner teclado = new Scanner(System.in);
-
-    // public static int menu() {
-    // int opcao;
-    // do {
-    // System.out.println("Escolha o método para resolver o problema dos
-    // caminhões");
-    // System.out.println("1 - Backtracking");
-    // System.out.println("2 - Divisão e Conquista");
-    // System.out.println("3 - Programação Dinâmica");
-    // opcao = teclado.nextInt();
-    // } while (opcao < 1 || opcao > 3);
-    // return opcao;
-    // }
 
     public static void resolverBacktracking(List<int[]> listaRotas, int numCaminhoes) {
         System.out.println("Você escolheu resolver o problema usando Backtracking.");
@@ -75,20 +60,26 @@ public class Main {
         int numCaminhoes = 3;
         // List<int[]> listaRotas = GeradorDeProblemas.geracaoDeRotas(6, 1, 0.40);
         List<int[]> listaRotas = Arrays.asList(
-        new int[] { 40, 36, 38, 29, 32, 28, 31, 35, 31, 30, 32, 30, 29, 39,
-        35, 38, 39, 35, 32, 38, 32, 33, 29, 33, 29, 39, 28 },
-        new int[] { 32, 51, 32, 43, 42, 30, 42, 51, 43, 51, 29, 25, 27, 32,
-        29, 55, 43, 29, 32, 44, 55, 29, 53, 30, 24, 27 });
+                new int[] { 40, 36, 38, 29, 32, 28, 31, 35, 31, 30, 32, 30, 29, 39,
+                        35, 38, 39, 35, 32, 38, 32, 33, 29, 33, 29, 39, 28 },
+                new int[] { 32, 51, 32, 43, 42, 30, 42, 51, 43, 51, 29, 25, 27, 32,
+                        29, 55, 43, 29, 32, 44, 55, 29, 53, 30, 24, 27 });
 
         // List<int[]> listaRotas = Arrays.asList(
-        //         new int[] { 40, 36, 38, 29, 32, 28, 31 });
+        // new int[] { 40, 36, 38, 29, 32, 28, 31 });
 
-        // resolverBacktracking(listaRotas, numCaminhoes);
+        System.out.println("BACKTRACKING");
+        resolverBacktracking(listaRotas, numCaminhoes);
 
-        // resolverDivisaoConquista(listaRotas, numCaminhoes);
-
+        System.out.println(System.lineSeparator());
+        System.out.println(System.lineSeparator());
+        System.out.println("PROGRAMAÇÃO DINÂMICA");
         resolverProgramacaoDinamica(listaRotas, numCaminhoes);
 
-        teclado.close();
+        System.out.println(System.lineSeparator());
+        System.out.println(System.lineSeparator());
+        System.out.println("DIVISÃO E CONQUISTA");
+        resolverDivisaoConquista(listaRotas, numCaminhoes);
+
     }
 }
